@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { siteConfig } from "@/config/site";
 
+/** Inherits its color from the parent so it works on light and dark backgrounds. */
 export function Logo() {
   const { logo, brand } = siteConfig;
   return (
@@ -10,12 +11,12 @@ export function Logo() {
       ) : (
         <span
           aria-hidden="true"
-          className="grid h-10 w-10 place-items-center rounded-full border border-primary font-serif text-sm tracking-wider text-primary"
+          className="grid h-10 w-10 place-items-center rounded-full border-[1.5px] border-current text-xs font-bold tracking-wider"
         >
           {logo.mark}
         </span>
       )}
-      <span className="font-serif text-base text-ink">{brand.name}</span>
+      <span className="text-[0.95rem] font-semibold tracking-tight">{brand.name}</span>
     </span>
   );
 }

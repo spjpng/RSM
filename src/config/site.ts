@@ -1,6 +1,7 @@
 /**
- * Single source of truth for branding, copy, colors, logo, and pricing.
+ * Single source of truth for branding, copy, logo, and pricing.
  * Edit this file to rebrand or rewrite the landing page — no component changes needed.
+ * Fonts, colors, and spacing live in ./theme.ts.
  */
 
 export const siteConfig = {
@@ -14,26 +15,11 @@ export const siteConfig = {
   // Set `src` to a file in /public (e.g. "/logo.svg") to use an image logo.
   // When `src` is empty, a text mark built from `mark` is shown instead.
   logo: {
-    src: "",
+    src: "" as string,
     alt: "Regulated Strength Method logo",
     mark: "RSM",
     width: 40,
     height: 40,
-  },
-
-  // Muted, earthy palette. Values are applied as CSS variables at the root,
-  // and exposed to Tailwind as bg-*, text-*, border-* utilities (see globals.css).
-  colors: {
-    background: "#F4F1EA", // warm linen
-    surface: "#FBF9F4", // card background
-    muted: "#E7E1D4", // alt section background
-    ink: "#2E2B26", // primary text
-    inkSoft: "#5E584E", // secondary text
-    primary: "#5F6F52", // moss green (buttons, accents)
-    primaryInk: "#FBF9F4", // text on primary
-    accent: "#A9764B", // clay
-    border: "#D8D0C0",
-    error: "#9A3B2E",
   },
 
   pricing: {
@@ -56,6 +42,9 @@ export const siteConfig = {
     subhead:
       "Consistency beats intensity. RSM helps you train steadily, recover well, and keep showing up — week after week, without the crash-and-restart cycle.",
     cta: "Join the Free 8-Week Beta Group",
+    // Optional photo behind the hero, e.g. "/hero.jpg" in /public. A soft overlay
+    // (theme.heroOverlay) keeps the text readable. Leave empty for a plain background.
+    backgroundImage: "" as string,
   },
 
   whoItsFor: {

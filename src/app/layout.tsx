@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { CSSProperties } from "react";
 import { siteConfig } from "@/config/site";
+import { fontSans, theme, themeCssVars } from "@/config/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,27 +15,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: siteConfig.colors.background,
+  themeColor: theme.colors.background,
 };
-
-const { colors } = siteConfig;
-const themeVars = {
-  "--rsm-background": colors.background,
-  "--rsm-surface": colors.surface,
-  "--rsm-muted": colors.muted,
-  "--rsm-ink": colors.ink,
-  "--rsm-ink-soft": colors.inkSoft,
-  "--rsm-primary": colors.primary,
-  "--rsm-primary-ink": colors.primaryInk,
-  "--rsm-accent": colors.accent,
-  "--rsm-border": colors.border,
-  "--rsm-error": colors.error,
-} as CSSProperties;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" style={themeVars}>
-      <body className="bg-background font-sans text-ink">{children}</body>
+    <html lang="en" className={fontSans.variable} style={themeCssVars as CSSProperties}>
+      <body className="bg-background font-sans text-base leading-relaxed text-ink">{children}</body>
     </html>
   );
 }

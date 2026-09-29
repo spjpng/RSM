@@ -6,8 +6,9 @@ import { validateLead, type Lead, type LeadErrors } from "@/lib/lead";
 
 const empty: Lead = { name: "", email: "", phone: "", ageRange: "", goal: "" };
 
-const fieldClass =
-  "mt-1.5 block w-full rounded-lg border bg-surface px-3.5 py-3 text-base text-ink placeholder:text-ink-soft/60 focus:outline-none focus:ring-2 focus:ring-primary/40";
+const labelClass = "text-sm font-semibold text-ink";
+const cardClass =
+  "rounded-card border border-line bg-background p-6 shadow-[0_32px_64px_-40px_rgb(28_31_26/0.35)] sm:p-10";
 
 export function LeadForm() {
   const { form, thankYou } = siteConfig;
@@ -62,17 +63,20 @@ export function LeadForm() {
         ref={thanksRef}
         tabIndex={-1}
         role="status"
-        className="rounded-2xl border border-line bg-surface p-6 focus:outline-none sm:p-8"
+        className={`${cardClass} animate-rise focus:outline-none`}
       >
-        <h3 className="font-serif text-2xl text-ink">{thankYou.heading}</h3>
-        <p className="mt-2 text-ink-soft">{thankYou.body}</p>
-        <h4 className="mt-6 text-sm font-semibold uppercase tracking-wider text-accent">
-          {thankYou.nextStepsHeading}
-        </h4>
-        <ol className="mt-3 space-y-3">
+        <span className="grid h-12 w-12 place-items-center rounded-full bg-primary text-on-primary">
+          <svg aria-hidden="true" viewBox="0 0 20 20" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m4.5 10.5 3.5 3.5 7.5-8" />
+          </svg>
+        </span>
+        <h3 className="mt-6 text-2xl font-bold tracking-tight text-balance sm:text-3xl">{thankYou.heading}</h3>
+        <p className="mt-3 text-lg text-ink-muted">{thankYou.body}</p>
+        <h4 className="eyebrow mt-10 text-primary">{thankYou.nextStepsHeading}</h4>
+        <ol className="mt-5 space-y-4">
           {thankYou.nextSteps.map((step, i) => (
-            <li key={step} className="flex gap-3 text-ink">
-              <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-xs text-primary-ink">
+            <li key={step} className="flex gap-4 text-ink">
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-primary/30 text-xs font-semibold text-primary">
                 {i + 1}
               </span>
               <span>{step}</span>
@@ -84,10 +88,9 @@ export function LeadForm() {
   }
 
   const describe = (key: keyof Lead) => (errors[key] ? `lead-${key}-error` : undefined);
-  const border = (key: keyof Lead) => (errors[key] ? "border-error" : "border-line");
   const errorText = (k: keyof Lead) =>
     errors[k] ? (
-      <p id={`lead-${k}-error`} className="mt-1.5 text-sm text-error">
+      <p id={`lead-${k}-error`} className="mt-2 text-sm text-error">
         {errors[k]}
       </p>
     ) : null;
@@ -96,10 +99,10 @@ export function LeadForm() {
     <form
       noValidate
       onSubmit={onSubmit}
-      className="space-y-5 rounded-2xl border border-line bg-surface p-6 sm:p-8"
+      className={`${cardClass} space-y-6`}
     >
       <div>
-        <label htmlFor="lead-name" className="text-sm font-medium text-ink">
+        <label htmlFor="lead-name" className={labelClass}>
           Name
         </label>
         <input
@@ -110,13 +113,13 @@ export function LeadForm() {
           onChange={(e) => update("name")(e.target.value)}
           aria-invalid={!!errors.name}
           aria-describedby={describe("name")}
-          className={`${fieldClass} ${border("name")}`}
+          className="field"
         />
         {errorText("name")}
       </div>
 
       <div>
-        <label htmlFor="lead-email" className="text-sm font-medium text-ink">
+        <label htmlFor="lead-email" className={labelClass}>
           Email
         </label>
         <input
@@ -128,13 +131,13 @@ export function LeadForm() {
           onChange={(e) => update("email")(e.target.value)}
           aria-invalid={!!errors.email}
           aria-describedby={describe("email")}
-          className={`${fieldClass} ${border("email")}`}
+          className="field"
         />
         {errorText("email")}
       </div>
 
       <div>
-        <label htmlFor="lead-phone" className="text-sm font-medium text-ink">
+        <label htmlFor="lead-phone" className={labelClass}>
           Phone
         </label>
         <input
@@ -146,13 +149,13 @@ export function LeadForm() {
           onChange={(e) => update("phone")(e.target.value)}
           aria-invalid={!!errors.phone}
           aria-describedby={describe("phone")}
-          className={`${fieldClass} ${border("phone")}`}
+          className="field"
         />
         {errorText("phone")}
       </div>
 
       <div>
-        <label htmlFor="lead-ageRange" className="text-sm font-medium text-ink">
+        <label htmlFor="lead-ageRange" className={labelClass}>
           Age range
         </label>
         <select
@@ -161,7 +164,7 @@ export function LeadForm() {
           onChange={(e) => update("ageRange")(e.target.value)}
           aria-invalid={!!errors.ageRange}
           aria-describedby={describe("ageRange")}
-          className={`${fieldClass} ${border("ageRange")}`}
+          className="field field-select"
         >
           <option value="" disabled>
             Select your age range
@@ -176,7 +179,7 @@ export function LeadForm() {
       </div>
 
       <div>
-        <label htmlFor="lead-goal" className="text-sm font-medium text-ink">
+        <label htmlFor="lead-goal" className={labelClass}>
           Main goal
         </label>
         <select
@@ -185,7 +188,7 @@ export function LeadForm() {
           onChange={(e) => update("goal")(e.target.value)}
           aria-invalid={!!errors.goal}
           aria-describedby={describe("goal")}
-          className={`${fieldClass} ${border("goal")}`}
+          className="field field-select"
         >
           <option value="" disabled>
             Select your main goal
@@ -213,7 +216,7 @@ export function LeadForm() {
       </div>
 
       {status === "error" && serverError && (
-        <p role="alert" className="rounded-lg bg-error/10 px-3.5 py-3 text-sm text-error">
+        <p role="alert" className="rounded-field border border-error/25 bg-error/5 px-4 py-3 text-sm text-error">
           {serverError}
         </p>
       )}
@@ -221,12 +224,12 @@ export function LeadForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-full bg-primary px-6 py-3.5 text-base font-medium text-primary-ink transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:opacity-60"
+        className="btn-primary w-full"
       >
         {status === "submitting" ? form.submitting : form.submit}
       </button>
 
-      <p className="text-center text-xs text-ink-soft">{form.privacyNote}</p>
+      <p className="text-center text-sm text-ink-muted">{form.privacyNote}</p>
     </form>
   );
 }

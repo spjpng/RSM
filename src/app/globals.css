@@ -1,34 +1,175 @@
 @import "tailwindcss";
 
-/* Palette values come from src/config/site.ts and are set on <html> in layout.tsx. */
+/*
+ * Token values live in src/config/theme.ts and are set as CSS variables on <html>.
+ * This block only maps them to Tailwind utilities — edit theme.ts, not this file.
+ */
 @theme inline {
   --color-background: var(--rsm-background);
   --color-surface: var(--rsm-surface);
-  --color-muted: var(--rsm-muted);
   --color-ink: var(--rsm-ink);
-  --color-ink-soft: var(--rsm-ink-soft);
+  --color-ink-muted: var(--rsm-ink-muted);
   --color-primary: var(--rsm-primary);
-  --color-primary-ink: var(--rsm-primary-ink);
-  --color-accent: var(--rsm-accent);
-  --color-line: var(--rsm-border);
+  --color-primary-hover: var(--rsm-primary-hover);
+  --color-primary-soft: var(--rsm-primary-soft);
+  --color-on-primary: var(--rsm-on-primary);
+  --color-line: var(--rsm-line);
   --color-error: var(--rsm-error);
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+
+  --spacing-gutter: var(--rsm-space-gutter);
+  --spacing-section: var(--rsm-space-section);
+  --container-page: var(--rsm-container);
+  --container-prose: var(--rsm-prose);
+
+  --text-display: var(--rsm-text-display);
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: var(--rsm-tracking-display);
+  --text-h2: var(--rsm-text-h2);
+  --text-h2--line-height: 1.08;
+  --text-h2--letter-spacing: var(--rsm-tracking-h2);
+
+  --radius-card: var(--rsm-radius-card);
+  --radius-field: var(--rsm-radius-field);
+
+  --ease-soft: var(--rsm-motion-easing);
+
+  --animate-rise: rise var(--rsm-motion-duration) var(--rsm-motion-easing) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(var(--rsm-motion-distance));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-}
-
 body {
   background-color: var(--rsm-background);
   color: var(--rsm-ink);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Primary button: rounded pill with lift on hover and a two-tone focus ring
+   that stays visible on light and dark backgrounds. */
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border-radius: 9999px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 1.05rem clamp(1.25rem, 5vw, 2rem);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  box-shadow: 0 1px 2px rgb(28 31 26 / 0.12), 0 8px 24px -12px rgb(28 31 26 / 0.45);
+  transition:
+    background-color 200ms var(--ease-soft),
+    transform 200ms var(--ease-soft),
+    box-shadow 200ms var(--ease-soft);
+
+  &:hover {
+    background-color: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgb(28 31 26 / 0.12), 0 16px 32px -14px rgb(28 31 26 / 0.55);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--color-background),
+      0 0 0 5px var(--color-primary);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+@utility eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@utility field {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+  border-radius: var(--radius-field);
+  border: 1px solid var(--color-line);
+  background-color: var(--color-surface);
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  color: var(--color-ink);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-ink) 30%, var(--color-line));
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+  &[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+  &[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-error) 18%, transparent);
+  }
+}
+
+@utility field-select {
+  appearance: none;
+  padding-right: 2.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%231C1F1A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.1rem;
+}
+
+/* Scroll reveal (see components/Reveal.tsx). Only elements that start below the fold
+   are hidden, and only once JS has run, so content never disappears without JS. */
+[data-reveal] {
+  transition:
+    opacity var(--rsm-motion-duration) var(--rsm-motion-easing),
+    transform var(--rsm-motion-duration) var(--rsm-motion-easing);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(var(--rsm-motion-distance));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
 }

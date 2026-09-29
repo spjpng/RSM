@@ -6,12 +6,14 @@ This is the landing page for the Regulated Strength Method (RSM) free 8-week bet
 
 ```
 src/
-  config/site.ts          All copy, colors, logo, pricing, and form options (edit this to rebrand)
-  app/layout.tsx          Applies the palette from the config as CSS variables
-  app/globals.css         Tailwind setup and color tokens (bg-primary, text-ink, etc.)
+  config/site.ts          All copy, logo, pricing, and form options (edit this to change content)
+  config/theme.ts         Font, colors, spacing, type scale, radii, hero overlay, and motion (edit this to restyle)
+  app/layout.tsx          Loads the font and applies the theme tokens as CSS variables
+  app/globals.css         Maps theme tokens to Tailwind utilities; button, field, and animation styles
   app/page.tsx            Landing page sections
   app/api/lead/route.ts   Validates leads and forwards them to the Google Sheet webhook
   components/LeadForm.tsx Client-side form with validation and the thank-you state
+  components/Reveal.tsx   Fade-in-on-scroll wrapper (respects reduced-motion settings)
   components/Logo.tsx     Image logo or text mark, depending on the config
   lib/lead.ts             Validation shared by the form and the API route
 ```
@@ -28,12 +30,23 @@ npm run dev                  # http://localhost:3000
 
 Other scripts: `npm run build` (production build), `npm start` (serve the build), and `npm run typecheck`.
 
-## Changing the branding
+## Changing the design
 
-Everything you'd want to change is in `src/config/site.ts`:
+`src/config/theme.ts` holds all design tokens:
 
-- `colors`: the palette. Each value becomes a CSS variable and a Tailwind color, so changing a hex value restyles the whole page.
+- `fontSans`: Poppins from Google Fonts, loaded with `next/font` in weights 400 (body), 600, and 700 (headings and buttons). To use another font, swap the import and keep the `--font-poppins` variable name, or update it in `globals.css`.
+- `colors`: a three-color palette (cream, ink, moss) plus tints of those colors. Every text/background pair meets WCAG AA contrast (4.5:1 or better), so re-check contrast if you change a color.
+- `spacing`: page gutter, section padding, and max widths. These become `px-gutter`, `py-section`, `max-w-page`, and `max-w-prose`.
+- `type`: the headline and section-heading sizes and letter spacing (`text-display`, `text-h2`).
+- `radius`, `motion`: card and field rounding, plus the fade-in duration, distance, and easing.
+- `heroOverlay`: the gradient drawn over the hero photo. For a very bright photo, raise the alpha values.
+
+## Changing the content
+
+Everything in the copy lives in `src/config/site.ts`:
+
 - `logo`: put an image in `/public` (for example `public/logo.svg`) and set `logo.src` to `"/logo.svg"`. If `src` is empty, the page shows a circular text mark instead.
+- `hero.backgroundImage`: set this to an image in `/public` (for example `"/hero.jpg"`) to put a photo behind the hero. The hero text switches to light colors over the overlay.
 - `pricing`: the beta label, price, and note.
 - `hero`, `whoItsFor`, `includes`, `howItWorks`, `commitment`, `form`, `thankYou`, `footer`: all the page copy.
 - `form.ageRanges` and `form.goals`: the dropdown options. The server accepts only these values.
