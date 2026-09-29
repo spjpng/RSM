@@ -54,16 +54,21 @@ Everything in the copy lives in `src/config/site.ts`:
 
 ## Google Sheet webhook
 
-1. Create a Google Sheet and add these headers to row 1: `submittedAt`, `name`, `email`, `phone`, `ageRange`, `goal`, `source`.
-2. In the sheet, open **Extensions → Apps Script** and paste in this code:
+The `/api/lead` route validates each signup on the server, then POSTs this JSON to `GOOGLE_SHEET_WEBHOOK_URL`:
+
+```json
+{ "timestamp": "2026-09-29T22:31:49.342Z", "name": "…", "email": "…", "phone": "…", "ageRange": "40–49", "goal": "…" }
+```
+
+1. Create a Google Sheet and add these headers to row 1: `timestamp`, `name`, `email`, `phone`, `ageRange`, `goal`.
+2. In the sheet, open **Extensions → Apps Script** and paste in this code. The key names must match the JSON above exactly.
 
    ```js
    function doPost(e) {
-     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
      const data = JSON.parse(e.postData.contents);
+     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
      sheet.appendRow([
-       data.submittedAt, data.name, data.email, data.phone,
-       data.ageRange, data.goal, data.source,
+       data.timestamp, data.name, data.email, data.phone, data.ageRange, data.goal,
      ]);
      return ContentService
        .createTextOutput(JSON.stringify({ ok: true }))
@@ -72,11 +77,20 @@ Everything in the copy lives in `src/config/site.ts`:
    ```
 
 3. Click **Deploy → New deployment**, choose **Web app**, set **Execute as** to *Me* and **Who has access** to *Anyone*, then deploy.
-4. Copy the web app URL (it ends in `/exec`) and set it as `GOOGLE_SHEET_WEBHOOK_URL`.
+4. Copy the web app URL (it ends in `/exec`) and set it as `GOOGLE_SHEET_WEBHOOK_URL` in `.env.local` and in Vercel.
 
 If you edit the script later, deploy a new version (**Deploy → Manage deployments → Edit → New version**) so the same URL runs the updated code.
 
-The webhook URL is used only on the server, so it never reaches the browser. The form also includes a hidden honeypot field that quietly drops simple bot submissions.
+The webhook URL is only read on the server, so it never reaches the browser. A hidden honeypot field quietly drops simple bot submissions.
+
+Apps Script returns HTTP 200 even when the script throws an error, or when the deployment isn't set to *Anyone* (it serves a Google sign-in page). The API route treats those HTML responses as failures, so the form shows an error instead of a false "thank you". If signups fail, check the server logs for "Lead webhook failed".
+
+To test the webhook without the form:
+
+```bash
+curl -X POST http://localhost:3000/api/lead -H "Content-Type: application/json" \
+  -d '{"name":"Test Lead","email":"test@example.com","phone":"555 010 1234","ageRange":"40–49","goal":"Other"}'
+```
 
 ## Deploying to Vercel
 
