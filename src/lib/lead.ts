@@ -1,49 +1,59 @@
-import { siteConfig } from "@/config/site";
+import type { FormField } from "@/config/content";
 
-export type Lead = {
-  name: string;
-  email: string;
-  phone: string;
-  ageRange: string;
-  goal: string;
-};
-
-export type LeadErrors = Partial<Record<keyof Lead, string>>;
+export type LeadValues = Record<string, string>;
+export type LeadErrors = Record<string, string>;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const MAX_LENGTH: Record<FormField["type"], number> = {
+  text: 200,
+  email: 254,
+  phone: 30,
+  select: 200,
+  textarea: 2000,
+};
 
-/** Shared by the client form and the API route so both enforce the same rules. */
-export function validateLead(input: Partial<Record<keyof Lead, unknown>>): {
-  lead: Lead;
-  errors: LeadErrors;
-} {
-  const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
-  const lead: Lead = {
-    name: str(input.name),
-    email: str(input.email).toLowerCase(),
-    phone: str(input.phone),
-    ageRange: str(input.ageRange),
-    goal: str(input.goal),
-  };
-
+/**
+ * Validates a submission against the form schema. Shared by the client form and the
+ * API route so both enforce the same rules. Only keys defined in the schema are kept.
+ */
+export function validateLead(
+  fields: FormField[],
+  input: Record<string, unknown>,
+): { lead: LeadValues; errors: LeadErrors } {
+  const lead: LeadValues = {};
   const errors: LeadErrors = {};
-  const { ageRanges, goals } = siteConfig.form;
 
-  if (lead.name.length < 2) errors.name = "Please enter your name.";
-  else if (lead.name.length > 100) errors.name = "Name is too long.";
+  for (const field of fields) {
+    const raw = input[field.id];
+    let value = typeof raw === "string" ? raw.trim() : "";
+    if (field.type === "email") value = value.toLowerCase();
+    lead[field.id] = value;
 
-  if (!EMAIL_RE.test(lead.email) || lead.email.length > 254)
-    errors.email = "Please enter a valid email address.";
+    if (!value) {
+      if (field.required)
+        errors[field.id] = field.type === "select" ? "Please choose an option." : "Please fill in this field.";
+      continue;
+    }
+    if (value.length > MAX_LENGTH[field.type]) {
+      errors[field.id] = "This answer is too long.";
+      continue;
+    }
 
-  const digits = lead.phone.replace(/\D/g, "");
-  if (!/^[+\d\s().-]*$/.test(lead.phone) || digits.length < 7 || digits.length > 15)
-    errors.phone = "Please enter a valid phone number.";
-
-  if (!(ageRanges as readonly string[]).includes(lead.ageRange))
-    errors.ageRange = "Please choose your age range.";
-
-  if (!(goals as readonly string[]).includes(lead.goal))
-    errors.goal = "Please choose your main goal.";
+    switch (field.type) {
+      case "email":
+        if (!EMAIL_RE.test(value)) errors[field.id] = "Please enter a valid email address.";
+        break;
+      case "phone": {
+        const digits = value.replace(/\D/g, "");
+        if (!/^[+\d\s().-]*$/.test(value) || digits.length < 7 || digits.length > 15)
+          errors[field.id] = "Please enter a valid phone number.";
+        break;
+      }
+      case "select":
+        if (!field.options.includes(value)) errors[field.id] = "Please choose an option.";
+        break;
+    }
+  }
 
   return { lead, errors };
 }

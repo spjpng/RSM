@@ -148,6 +148,61 @@ body {
   background-size: 1.1rem;
 }
 
+/* Edit mode (admins only): inline-editable text and the form builder's compact inputs. */
+[data-editable] {
+  cursor: text;
+  border-radius: 0.3em;
+  outline: 1.5px dashed color-mix(in srgb, currentColor 35%, transparent);
+  outline-offset: 3px;
+  transition: outline-color 150ms ease;
+}
+[data-editable]:hover {
+  outline-color: color-mix(in srgb, currentColor 70%, transparent);
+}
+[data-editable]:focus {
+  outline: 2px solid var(--color-primary);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+span[data-editable] {
+  display: inline-block;
+  min-width: 2ch;
+}
+[data-editable]:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+@utility builder-input {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-line);
+  background-color: var(--color-background);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-ink);
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+  &[aria-invalid="true"] {
+    border-color: var(--color-error);
+  }
+  &:where(select) {
+    appearance: none;
+    padding-right: 2.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none' stroke='%231C1F1A' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+  }
+}
+
 /* Scroll reveal (see components/Reveal.tsx). Only elements that start below the fold
    are hidden, and only once JS has run, so content never disappears without JS. */
 [data-reveal] {

@@ -2,8 +2,8 @@ import Image from "next/image";
 import { siteConfig } from "@/config/site";
 
 /** Inherits its color from the parent so it works on light and dark backgrounds. */
-export function Logo() {
-  const { logo, brand } = siteConfig;
+export function Logo({ name }: { name: string }) {
+  const { logo } = siteConfig;
   return (
     <span className="inline-flex items-center gap-3">
       {logo.src ? (
@@ -16,7 +16,7 @@ export function Logo() {
           {logo.mark}
         </span>
       )}
-      <span className="text-[0.95rem] font-semibold tracking-tight">{brand.name}</span>
+      <span className="text-[0.95rem] font-semibold tracking-tight">{name}</span>
     </span>
   );
 }
